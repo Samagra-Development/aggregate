@@ -140,8 +140,10 @@ public abstract class AbstractExternalService implements ExternalService {
 
   @Override
   public void sendSubmissions(List<Submission> submissions, boolean streaming, CallingContext cc) throws ODKExternalServiceException {
-    throw new ODKExternalServiceException(NO_BATCH_FUNCTIONALITY_ERROR);
+    insertDataBatch(submissions, cc, streaming);
   }
+
+  protected abstract void insertDataBatch(List<Submission> submissions, CallingContext cc, boolean streaming) throws ODKExternalServiceException;
 
   @Override
   public void sendSubmission(Submission submission, CallingContext cc) throws ODKExternalServiceException {

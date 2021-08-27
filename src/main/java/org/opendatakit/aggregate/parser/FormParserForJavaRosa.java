@@ -74,7 +74,7 @@ public class FormParserForJavaRosa extends BaseFormParserForJavaRosa {
 
   private static final Logger log = LoggerFactory.getLogger(FormParserForJavaRosa.class.getName());
 
-  private static final long FIFTEEN_MINUTES_IN_MILLISECONDS = 15 * 60 * 1000L;
+  private static final long FIFTEEN_MINUTES_IN_MILLISECONDS = 5 * 60 * 1000L;
 
   // arbitrary limit on the table-creation process, to prevent infinite loops
   // that exhaust memory

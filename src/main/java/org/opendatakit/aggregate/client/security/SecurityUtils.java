@@ -20,7 +20,7 @@ public class SecurityUtils {
    * @see #secureRequest(Object, SecureRpcRequest, Consumer, Consumer)
    */
   public static <T> void secureRequest(T rpc, SecureRpcRequest<T, Void> request, Runnable onSuccess, Consumer<Throwable> onFailure) {
-    secureRequest(rpc, request, __ -> onSuccess.run(), onFailure);
+    //secureRequest(rpc, request, __ -> onSuccess.run(), onFailure);
   }
 
   /**

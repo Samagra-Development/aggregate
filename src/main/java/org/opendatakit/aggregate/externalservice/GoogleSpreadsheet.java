@@ -599,6 +599,11 @@ public class GoogleSpreadsheet extends GoogleOauth2ExternalService implements Ex
     }
   }
 
+  @Override
+  protected void insertDataBatch(List<Submission> submissions, CallingContext cc, boolean streaming) throws ODKExternalServiceException {
+    throw new IllegalStateException("Currently not implemented");
+  }
+
   /**
    * Creates the request to append the data in the given submissionSet as a new entry (i.e. a new row)
    * in the given worksheet, including only the data specified by headers.

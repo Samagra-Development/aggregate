@@ -17,6 +17,7 @@
 
 package org.opendatakit.aggregate.externalservice;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -60,6 +61,11 @@ public class JsonServer extends AbstractExternalService implements ExternalServi
    * Datastore entity specific to this type of external service
    */
   private final JsonServer3ParameterTable objectEntity;
+
+  @Override
+  public boolean canBatchSubmissions() {
+    return true;
+  }
 
   private JsonServer(JsonServer3ParameterTable entity, FormServiceCursor formServiceCursor,
                      IForm form, CallingContext cc) {
@@ -178,6 +184,8 @@ public class JsonServer extends AbstractExternalService implements ExternalServi
       JsonParser parser = new JsonParser();
       JsonElement submissionJsonObj = parser.parse(baStream.toString(HtmlConsts.UTF8_ENCODE));
 
+      //
+
       // create json object
       JsonObject entity = new JsonObject();
       entity.addProperty("token", getAuthKey());
@@ -207,6 +215,61 @@ public class JsonServer extends AbstractExternalService implements ExternalServi
   }
 
   @Override
+  protected void insertDataBatch(List<Submission> submissions, CallingContext cc, boolean streaming) throws ODKExternalServiceException {
+      try {
+        BinaryOption option = objectEntity.getBinaryOption();
+
+        ByteArrayOutputStream baStream;
+        PrintWriter pWriter;
+
+        // format submission
+        JsonFormatterWithFilters formatter;
+        JsonArray submissionJsonArray = new JsonArray();
+        for(Submission submission: submissions){
+          baStream = new ByteArrayOutputStream();
+          pWriter = new PrintWriter(new OutputStreamWriter(baStream, HtmlConsts.UTF8_ENCODE));
+          formatter = new JsonFormatterWithFilters(pWriter, form, null, option,
+                  true, cc.getServerURL());
+          formatter.processSubmissions(Collections.singletonList(submission), cc);
+          pWriter.flush();
+          JsonParser parser = new JsonParser();
+          JsonElement submissionJsonObj = parser.parse(baStream.toString(HtmlConsts.UTF8_ENCODE));
+          submissionJsonArray.add(submissionJsonObj);
+        }
+
+        // create json object
+        JsonObject entity = new JsonObject();
+        entity.addProperty("token", getAuthKey());
+        entity.addProperty("content", "record");
+        entity.addProperty("formId", form.getFormId());
+        entity.addProperty("formVersion", form.getMajorMinorVersionString());
+        entity.add("data", submissionJsonArray);
+
+        StringEntity postentity = new StringEntity(entity.toString(), HtmlConsts.UTF8_ENCODE);
+        postentity.setContentType("application/json");
+
+        this.sendRequest(getServerUrl(), postentity, cc);
+      } catch (ODKExternalServiceCredentialsException e) {
+        fsc.setOperationalStatus(OperationalStatus.BAD_CREDENTIALS);
+        try {
+          persist(cc);
+        } catch (Exception e1) {
+          e1.printStackTrace();
+          throw new ODKExternalServiceException("unable to persist bad credentials status", e1);
+        }
+        throw e; // don't wrap
+      } catch (ODKExternalServiceException e) {
+        throw e; // don't wrap
+      } catch (Exception e) {
+        throw new ODKExternalServiceException(e);
+      }
+  }
+
+  protected CommonFieldsBase retrieveObjectEntity() {
+    return objectEntity;
+  }
+
+  @Override
   public String getDescriptiveTargetString() {
     // the token, if supplied, is a secret.
     // Show only the first 4 characters, or,
@@ -216,10 +279,6 @@ public class JsonServer extends AbstractExternalService implements ExternalServi
       auth = " token: " + auth.substring(0, Math.min(4, auth.length() / 3)) + "...";
     }
     return getServerUrl() + auth;
-  }
-
-  protected CommonFieldsBase retrieveObjectEntity() {
-    return objectEntity;
   }
 
   @Override
