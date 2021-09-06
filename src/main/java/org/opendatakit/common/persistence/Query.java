@@ -28,6 +28,8 @@ public interface Query {
 
   void addFilter(DataField attributeName, FilterOperation op, Object value);
 
+  void addLimit(int limit);
+
   List<? extends CommonFieldsBase> executeQuery() throws ODKDatastoreException;
 
   QueryResult executeQuery(QueryResumePoint startCursor, int fetchLimit) throws ODKDatastoreException;

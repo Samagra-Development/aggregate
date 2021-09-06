@@ -41,6 +41,7 @@ import org.opendatakit.aggregate.format.element.BasicElementFormatter;
 import org.opendatakit.aggregate.format.header.BasicHeaderFormatter;
 import org.opendatakit.aggregate.format.structure.JsonFormatterWithFilters;
 import org.opendatakit.aggregate.submission.Submission;
+import org.opendatakit.aggregate.task.UploadSubmissionsWorkerImpl;
 import org.opendatakit.common.persistence.CommonFieldsBase;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.persistence.exception.ODKEntityPersistException;
@@ -50,6 +51,8 @@ import org.opendatakit.common.utils.WebUtils;
 import org.opendatakit.common.web.CallingContext;
 import org.opendatakit.common.web.constants.BasicConsts;
 import org.opendatakit.common.web.constants.HtmlConsts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author wbrunette@gmail.com
@@ -61,6 +64,7 @@ public class JsonServer extends AbstractExternalService implements ExternalServi
    * Datastore entity specific to this type of external service
    */
   private final JsonServer3ParameterTable objectEntity;
+  private static final Logger logger = LoggerFactory.getLogger(JsonServer.class);
 
   @Override
   public boolean canBatchSubmissions() {
@@ -216,6 +220,7 @@ public class JsonServer extends AbstractExternalService implements ExternalServi
 
   @Override
   protected void insertDataBatch(List<Submission> submissions, CallingContext cc, boolean streaming) throws ODKExternalServiceException {
+    logger.info("Starting submitting bulk data" + submissions.get(0).getFormId());
       try {
         BinaryOption option = objectEntity.getBinaryOption();
 
@@ -249,6 +254,7 @@ public class JsonServer extends AbstractExternalService implements ExternalServi
         postentity.setContentType("application/json");
 
         this.sendRequest(getServerUrl(), postentity, cc);
+        logger.info("Done submitting bulk data"+  submissions.get(0).getFormId());
       } catch (ODKExternalServiceCredentialsException e) {
         fsc.setOperationalStatus(OperationalStatus.BAD_CREDENTIALS);
         try {

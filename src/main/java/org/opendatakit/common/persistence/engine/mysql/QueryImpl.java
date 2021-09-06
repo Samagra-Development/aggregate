@@ -157,6 +157,11 @@ public class QueryImpl implements Query {
     }
   }
 
+  @Override
+  public void addLimit(int limit) {
+
+  }
+
   private ArrayList<Object> addContinuationFilter(StringBuilder queryContinuationBindBuilder, Object continuationValue) {
     if (dominantSortAttr == null) {
       throw new IllegalStateException("unexpected state");

@@ -49,6 +49,7 @@ public class QueryImpl implements Query {
   private static final String K_AND = " AND ";
   private static final String K_BIND_VALUE = " ? ";
   private static final String K_ORDER_BY = " ORDER BY ";
+  private static final String K_LIMIT_BY = " LIMIT ";
 
   private static Map<FilterOperation, String> operationMap = new HashMap<FilterOperation, String>();
   private static Map<Direction, String> directionMap = new HashMap<Direction, String>();
@@ -71,6 +72,7 @@ public class QueryImpl implements Query {
   private final StringBuilder queryBindBuilder = new StringBuilder();
   private final List<Object> bindValues = new ArrayList<Object>();
   private final StringBuilder querySortBuilder = new StringBuilder();
+  private final StringBuilder queryLimitBuilder = new StringBuilder();
   private final Logger queryStringLogger;
   private DataField dominantSortAttr = null;
   private Direction dominantSortDirection = null;
@@ -155,6 +157,11 @@ public class QueryImpl implements Query {
       queryBindBuilder.append(K_BIND_VALUE);
       bindValues.add(DatastoreImpl.getBindValue(attributeName, value));
     }
+  }
+
+  @Override
+  public void addLimit(int limit) {
+    queryLimitBuilder.append(K_LIMIT_BY).append(limit);
   }
 
   private ArrayList<Object> addContinuationFilter(StringBuilder queryContinuationBindBuilder, Object continuationValue) {
@@ -294,7 +301,7 @@ public class QueryImpl implements Query {
     }
 
     String query = generateQuery() + queryBindBuilder.toString()
-        + queryContinuationBindBuilder.toString() + querySortBuilder.toString() + ";";
+        + queryContinuationBindBuilder.toString() + querySortBuilder.toString() + queryLimitBuilder.toString() +";";
     RowMapper<? extends CommonFieldsBase> rowMapper = null;
     rowMapper = new RelationRowMapper(relation, user);
     RowMapperFilteredResultSetExtractor rse = new RowMapperFilteredResultSetExtractor(startCursor,

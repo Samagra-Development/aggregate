@@ -270,7 +270,8 @@ public class UploadSubmissionsWorkerImpl {
       // check if publisher is capable of batching transmission
       if (externalService.canBatchSubmissions()) {
         externalService.sendSubmissions(submissionsToSend, streaming, cc);
-
+        ExternalServiceUtils.updateFscToSuccessfulSubmissionDate(formServiceCursor, submissionsToSend.get(submissionsToSend.size()-1), streaming);
+        ds.putEntity(formServiceCursor, user);
       } else { // publisher not capable of batching
         int counter = 0;
         for (Submission submission : submissionsToSend) {
@@ -280,7 +281,6 @@ public class UploadSubmissionsWorkerImpl {
           // persist updated last send date
           ExternalServiceUtils.updateFscToSuccessfulSubmissionDate(formServiceCursor, submission, streaming);
           ds.putEntity(formServiceCursor, user);
-
           counter = renewTaskLock(counter);
         }
       }
@@ -347,7 +347,7 @@ public class UploadSubmissionsWorkerImpl {
   private List<Submission> querySubmissionsDateRange(Date startDate, Date endDate, String uriLast) throws ODKDatastoreException {
     // query for next set of submissions
     // TODO: Fix this hack later: getQueryLimit();
-    QueryByDateRange query = new QueryByDateRange(form, 500, startDate, endDate, uriLast, cc);
+    QueryByDateRange query = new QueryByDateRange(form, 50, startDate, endDate, uriLast, cc);
     return query.getResultSubmissions(cc);
   }
 
@@ -355,7 +355,7 @@ public class UploadSubmissionsWorkerImpl {
     // query for next set of submissions
     // (excluding the very recent submissions that haven't settled yet).
     // TODO: Fix this hack later: getQueryLimit();
-    QueryByDateRange query = new QueryByDateRange(form, 100, startDate, uriLast, cc);
+    QueryByDateRange query = new QueryByDateRange(form, 50, startDate, uriLast, cc);
     return query.getResultSubmissions(cc);
   }
 }
