@@ -300,6 +300,7 @@ public class QueryImpl implements Query {
       values = bindValues;
     }
 
+    this.addLimit(fetchLimit);
     String query = generateQuery() + queryBindBuilder.toString()
         + queryContinuationBindBuilder.toString() + querySortBuilder.toString() + queryLimitBuilder.toString() +";";
     RowMapper<? extends CommonFieldsBase> rowMapper = null;
