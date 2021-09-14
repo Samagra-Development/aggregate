@@ -347,7 +347,7 @@ public class UploadSubmissionsWorkerImpl {
   private List<Submission> querySubmissionsDateRange(Date startDate, Date endDate, String uriLast) throws ODKDatastoreException {
     // query for next set of submissions
     // TODO: Fix this hack later: getQueryLimit();
-    QueryByDateRange query = new QueryByDateRange(form, 50, startDate, endDate, uriLast, cc);
+    QueryByDateRange query = new QueryByDateRange(form, 500, startDate, endDate, uriLast, cc);
     return query.getResultSubmissions(cc);
   }
 
@@ -355,7 +355,7 @@ public class UploadSubmissionsWorkerImpl {
     // query for next set of submissions
     // (excluding the very recent submissions that haven't settled yet).
     // TODO: Fix this hack later: getQueryLimit();
-    QueryByDateRange query = new QueryByDateRange(form, 50, startDate, uriLast, cc);
+    QueryByDateRange query = new QueryByDateRange(form, 500, startDate, uriLast, cc);
     return query.getResultSubmissions(cc);
   }
 }
