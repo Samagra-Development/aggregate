@@ -17,7 +17,10 @@ package org.opendatakit.aggregate.externalservice;
 
 import java.util.Date;
 import org.opendatakit.aggregate.constants.common.OperationalStatus;
+import org.opendatakit.aggregate.form.FormFactory;
 import org.opendatakit.aggregate.submission.Submission;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Consolidated state-transition logic for managing retries and backoff of
@@ -26,6 +29,7 @@ import org.opendatakit.aggregate.submission.Submission;
  * @author wbrunette@gmail.com
  */
 public class ExternalServiceUtils {
+  private static final Logger logger = LoggerFactory.getLogger(FormFactory.class);
 
   /**
    * If the FormServiceCursor is ACTIVE, transition to ACTIVE_PAUSE. If it is
@@ -56,9 +60,11 @@ public class ExternalServiceUtils {
     String lastKeySent = submission.getKey().getKey();
 
     if (streaming) {
+      logger.info("LastDateSent(streaming): "+ lastDateSent+ " formId: "+submission.getFormId());
       fsc.setLastStreamingCursorDate(lastDateSent);
       fsc.setLastStreamingKey(lastKeySent);
     } else {
+      logger.info("LastDateSent: "+ lastDateSent+ " formId: "+submission.getFormId());
       fsc.setLastUploadCursorDate(lastDateSent);
       fsc.setLastUploadKey(lastKeySent);
     }
