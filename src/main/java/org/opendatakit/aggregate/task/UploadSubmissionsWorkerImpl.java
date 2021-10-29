@@ -361,11 +361,11 @@ public class UploadSubmissionsWorkerImpl {
     // query for next set of submissions
     // (excluding the very recent submissions that haven't settled yet).
     // TODO: Fix this hack later: getQueryLimit();
-    maxFetchLimit = System.getenv("maxFetchLimit");
+    String maxFetchLimit = System.getenv("maxFetchLimit");
     if(maxFetchLimit == null){
-      maxFetchLimit = 500;
+      maxFetchLimit = "500";
     }
-    QueryByDateRange query = new QueryByDateRange(form, maxFetchLimit, startDate, uriLast, cc);
+    QueryByDateRange query = new QueryByDateRange(form, Integer.parseInt(maxFetchLimit), startDate, uriLast, cc);
     return query.getResultSubmissions(cc);
   }
 }
