@@ -349,11 +349,11 @@ public class UploadSubmissionsWorkerImpl {
   private List<Submission> querySubmissionsDateRange(Date startDate, Date endDate, String uriLast) throws ODKDatastoreException {
     // query for next set of submissions
     // TODO: Fix this hack later: getQueryLimit();
-    maxFetchLimit = System.getenv("maxFetchLimit");
+    String maxFetchLimit = System.getenv("maxFetchLimit");
     if(maxFetchLimit == null){
-      maxFetchLimit = 500;
+      maxFetchLimit = "500";
     }
-    QueryByDateRange query = new QueryByDateRange(form, maxFetchLimit, startDate, endDate, uriLast, cc);
+    QueryByDateRange query = new QueryByDateRange(form, Integer.parseInt(maxFetchLimit), startDate, endDate, uriLast, cc);
     return query.getResultSubmissions(cc);
   }
 
