@@ -1,11 +1,18 @@
-Closes #
+<!-- Please refer to CONTRIBUTING.md (https://github.com/Samagra-Development/uci-pwa/blob/main/CONTRIBUTING.md)
+before creating the pull request to make sure you follow all the standards. -->
 
-#### What has been done to verify that this works as intended?
+## Description
 
-#### Why is this the best possible solution? Were any other approaches considered?
+Please describe the changes in your pull request in few words here.
 
-#### Are there any risks to merging this code? If so, what are they?
+### Changes
 
-#### Do we need any specific form for testing your changes? If so, please attach one
+List the changes done to fix a bug or introducing a new feature.
 
-#### Does this change require updates to documentation? If so, please file an issue at https://github.com/getodk/docs/issues/new and include the link below.
+## How to test
+
+Describe the steps required to test the changes proposed in the pull request.
+
+Please consider using the closing keyword if the pull request is proposed to
+fix an issue already created in the repository
+(https://help.github.com/articles/closing-issues-using-keywords/)
