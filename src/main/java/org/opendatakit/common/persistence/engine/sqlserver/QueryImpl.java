@@ -222,7 +222,6 @@ public class QueryImpl implements Query {
     String query = generateQuery() + queryBindBuilder.toString() + querySortBuilder.toString()
         + ";";
     int count = countMatches("LIMIT", query);
-    queryStringLogger.info("LIMIT count : "+ count);
     if(count >1){
       int indexOfSubStr = query.indexOf("LIMIT");
       query = query.substring(0, indexOfSubStr - 1);
@@ -310,7 +309,6 @@ public class QueryImpl implements Query {
     String query = generateQuery() + queryBindBuilder.toString()
         + queryContinuationBindBuilder.toString() + querySortBuilder.toString() + ";";
     int count = countMatches("LIMIT", query);
-    queryStringLogger.info("LIMIT count : "+ count);
     if(count >1){
       int indexOfSubStr = query.indexOf("LIMIT");
       query = query.substring(0, indexOfSubStr - 1);
