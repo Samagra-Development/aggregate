@@ -366,11 +366,14 @@ public class QueryImpl implements Query {
   /* Counts how many times the substring appears in the larger string. */
   public static int countMatches(String text, String str)
   {
-    if (isEmpty(text) || isEmpty(str)) {
-      return 0;
+    int count = 0, index = 0;
+    List<Integer> indices=new ArrayList<>();
+    while ((index = str.indexOf(text, index)) != -1 ){
+      count++;
+      indices.add(index);
+      index++;
     }
-
-    return text.split(str, -1).length - 1;
+    return count;
   }
 
   private class CoreResult {
