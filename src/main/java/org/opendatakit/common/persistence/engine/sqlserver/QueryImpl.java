@@ -221,6 +221,13 @@ public class QueryImpl implements Query {
 
     String query = generateQuery() + queryBindBuilder.toString() + querySortBuilder.toString()
         + ";";
+    int count = countMatches("LIMIT", query);
+    queryStringLogger.info("LIMIT count : "+ count);
+    if(count >1){
+      int indexOfSubStr = query.indexOf("LIMIT");
+      query = query.substring(0, indexOfSubStr - 1);
+      query = query + " LIMIT " + ServletConsts.EXPORT_CURSOR_CHUNK_SIZE + ";";
+    }
     RowMapper<? extends CommonFieldsBase> rowMapper = null;
     rowMapper = new RelationRowMapper(relation, user);
 
@@ -303,6 +310,7 @@ public class QueryImpl implements Query {
     String query = generateQuery() + queryBindBuilder.toString()
         + queryContinuationBindBuilder.toString() + querySortBuilder.toString() + ";";
     int count = countMatches("LIMIT", query);
+    queryStringLogger.info("LIMIT count : "+ count);
     if(count >1){
       int indexOfSubStr = query.indexOf("LIMIT");
       query = query.substring(0, indexOfSubStr - 1);
