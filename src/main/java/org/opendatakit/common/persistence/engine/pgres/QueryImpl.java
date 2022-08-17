@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.common.persistence.CommonFieldsBase;
 import org.opendatakit.common.persistence.DataField;
 import org.opendatakit.common.persistence.Query;
@@ -221,6 +223,13 @@ public class QueryImpl implements Query {
 
     String query = generateQuery() + queryBindBuilder.toString() + querySortBuilder.toString()
         + ";";
+    int count = countMatches("LIMIT", query);
+    queryStringLogger.info("LIMIT count : "+ count);
+    if(count >1){
+      int indexOfSubStr = query.indexOf("LIMIT");
+      query = query.substring(0, indexOfSubStr - 1);
+      query = query + " LIMIT " + ServletConsts.EXPORT_CURSOR_CHUNK_SIZE + ";";
+    }
     RowMapper<? extends CommonFieldsBase> rowMapper = null;
     rowMapper = new RelationRowMapper(relation, user);
 
@@ -303,6 +312,13 @@ public class QueryImpl implements Query {
     this.addLimit(fetchLimit);
     String query = generateQuery() + queryBindBuilder.toString()
         + queryContinuationBindBuilder.toString() + querySortBuilder.toString() + queryLimitBuilder.toString() +";";
+    int count = countMatches("LIMIT", query);
+    queryStringLogger.info("LIMIT count : "+ count);
+    if(count >1){
+      int indexOfSubStr = query.indexOf("LIMIT");
+      query = query.substring(0, indexOfSubStr - 1);
+      query = query + " LIMIT " + ServletConsts.EXPORT_CURSOR_CHUNK_SIZE + ";";
+    }
     RowMapper<? extends CommonFieldsBase> rowMapper = null;
     rowMapper = new RelationRowMapper(relation, user);
     RowMapperFilteredResultSetExtractor rse = new RowMapperFilteredResultSetExtractor(startCursor,
@@ -341,6 +357,20 @@ public class QueryImpl implements Query {
       e.printStackTrace();
       throw new ODKDatastoreException(e);
     }
+  }
+
+  public static boolean isEmpty(String s) {
+    return s == null || s.length() == 0;
+  }
+
+  /* Counts how many times the substring appears in the larger string. */
+  public static int countMatches(String text, String str)
+  {
+    if (isEmpty(text) || isEmpty(str)) {
+      return 0;
+    }
+
+    return text.split(str, -1).length - 1;
   }
 
   private class CoreResult {
