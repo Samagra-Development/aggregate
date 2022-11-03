@@ -116,27 +116,29 @@ public class PreferenceServiceImpl extends RemoteServiceServlet implements
   }
 
   synchronized private static String getLatestAvailableVersion() {
-    if (latestAvailableVersionRefreshRequired()) {
-      try {
-        log.warn("Getting latest available version");
-        URL url = new URL("https://api.github.com/repos/getodk/aggregate/releases/latest");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        if (con.getResponseCode() == 200)
-          try (InputStream in = con.getInputStream()) {
-            LATEST_AVAILABLE_VERSION = Optional.ofNullable(JSON.readTree(in))
-                .map(node -> node.get("tag_name"))
-                .map(JsonNode::asText)
-                .orElse(null);
-          }
-        else
-          log.error("Can't get latest available version - GitHub responded with HTTP " + con.getResponseCode() + " " + con.getResponseMessage());
-        LAST_REFRESH_OF_LATEST_AVAILABLE_VERSION = LocalDate.now();
-      } catch (IOException e) {
-        log.error("Can't get latest available version", e);
-      }
-    }
-    return LATEST_AVAILABLE_VERSION;
+    // dont check version just return, as we don't have access to net in gov servers
+    return VERSION;
+    // if (latestAvailableVersionRefreshRequired()) {
+    //   try {
+    //     log.warn("Getting latest available version");
+    //     URL url = new URL("https://api.github.com/repos/getodk/aggregate/releases/latest");
+    //     HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    //     con.setRequestMethod("GET");
+    //     if (con.getResponseCode() == 200)
+    //       try (InputStream in = con.getInputStream()) {
+    //         LATEST_AVAILABLE_VERSION = Optional.ofNullable(JSON.readTree(in))
+    //             .map(node -> node.get("tag_name"))
+    //             .map(JsonNode::asText)
+    //             .orElse(null);
+    //       }
+    //     else
+    //       log.error("Can't get latest available version - GitHub responded with HTTP " + con.getResponseCode() + " " + con.getResponseMessage());
+    //     LAST_REFRESH_OF_LATEST_AVAILABLE_VERSION = LocalDate.now();
+    //   } catch (IOException e) {
+    //     log.error("Can't get latest available version", e);
+    //   }
+    // }
+    // return LATEST_AVAILABLE_VERSION;
   }
 
   private static boolean latestAvailableVersionRefreshRequired() {
